@@ -3,79 +3,117 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hey ho! 💗</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f9e6ed">
+<title>Hey ho! ♡</title>
 
 <style>
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
 }
 
 body {
-  margin: 0;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #fff0f5, #ffe0ec, #fff5fa);
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at center, #fffafd, #fce5ed 70%, #edc4d3);
+  color: #98566e;
   font-family: Georgia, serif;
-  overflow: hidden;
-  color: #bd6485;
+}
+
+/* Lace background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .48;
+  background-image:
+    radial-gradient(circle at center,
+      transparent 45%, #fff 47%, #fff 51%, transparent 53%);
+  background-size: 24px 24px;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 12px;
+  border: 1px solid #dca8bb;
+  outline: 1px solid #e9c8d5;
+  outline-offset: 5px;
+  pointer-events: none;
 }
 
 .container {
-  text-align: center;
-  padding: 25px;
-  width: 90%;
-  max-width: 420px;
+  position: relative;
   z-index: 2;
+  width: 88%;
+  max-width: 420px;
+  padding: 38px 22px;
+  text-align: center;
+  background: rgba(255,250,252,.88);
+  border: 1px solid #edcbd8;
+  box-shadow: 0 15px 45px #b8759020;
+}
+
+.small {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #c58ba3;
 }
 
 h1 {
-  font-size: 32px;
-  margin-bottom: 15px;
+  font-size: 33px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  margin: 17px 0;
 }
 
 p {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.7;
 }
 
 .heart {
   border: none;
-  background: none;
-  font-size: 85px;
+  background: transparent;
+  font-size: 90px;
+  color: #d66d98;
   cursor: pointer;
-  animation: beat 1s infinite;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px #e8a2bc);
 }
 
-@keyframes beat {
-  50% { transform: scale(1.15); }
+@keyframes float {
+  50% { transform: translateY(-10px) scale(1.08); }
 }
 
-button.option {
-  border: none;
-  border-radius: 25px;
-  padding: 12px 28px;
-  font-size: 16px;
+.option {
+  border: 1px solid #e3b1c5;
+  border-radius: 3px;
+  padding: 13px 30px;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  letter-spacing: 1px;
   cursor: pointer;
-  margin: 10px;
-  font-family: inherit;
+  margin: 8px;
 }
 
 .yes {
-  background: #ed91b3;
+  background: #d88da9;
   color: white;
 }
 
 .no {
-  background: #eee;
-  color: #777;
-  position: relative;
-}
-
-.hidden {
-  display: none;
+  background: #fff7fa;
+  color: #a66c83;
 }
 
 #buttons {
@@ -84,71 +122,76 @@ button.option {
   margin-top: 20px;
 }
 
+.hidden { display: none; }
+
 #result {
-  font-size: 24px;
-  margin-top: 25px;
+  font-size: 22px;
+  line-height: 1.8;
+}
+
+#musicBtn {
+  position: fixed;
+  z-index: 5;
+  top: 28px;
+  right: 28px;
+  border: 1px solid #e3b1c5;
+  border-radius: 30px;
+  padding: 10px 16px;
+  color: #a66c83;
+  background: #fff9fb;
+  font-family: Georgia, serif;
+  cursor: pointer;
 }
 
 .floating {
   position: fixed;
   bottom: -30px;
-  animation: floatUp 6s linear infinite;
   pointer-events: none;
+  animation: rise 7s linear forwards;
   z-index: 1;
 }
 
-@keyframes floatUp {
+@keyframes rise {
   to {
     transform: translateY(-110vh) rotate(360deg);
     opacity: 0;
   }
 }
 
-.music-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #ffffffaa;
-  border: 1px solid #f5c3d5;
-  border-radius: 30px;
-  padding: 10px 15px;
-  color: #bd6485;
-  cursor: pointer;
-  z-index: 5;
+@media(max-width:480px) {
+  #musicBtn { top: 25px; right: 25px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- Music -->
-<audio id="music" loop>
-  <source src="YOUR_MUSIC_URL" type="audio/mpeg">
-</audio>
-
-<button class="music-btn" id="musicBtn"
-onclick="toggleMusic()">🎵 Music ON</button>
+<button id="musicBtn">♫ MUSIC OFF</button>
 
 <div class="container">
 
   <div id="start">
-    <h1>Hey ho! 💗</h1>
+    <div class="small">A little surprise</div>
+    <h1>Hey ho!</h1>
     <p>I have something to tell you...</p>
-    <button class="heart" onclick="openProposal()">💗</button>
-    <p style="font-size:13px">tap the heart</p>
+
+    <button class="heart" id="heartBtn">♡</button>
+
+    <p class="small">tap the heart</p>
   </div>
 
   <div id="proposal" class="hidden">
-    <h1>Sooo... 💌</h1>
-    <p>Wanna be my Valentine? 🎀</p>
+    <div class="small">Just a little question</div>
+    <h1>Sooo...</h1>
+    <p>Can I have you for Valentine's?</p>
 
     <div id="buttons">
       <button class="option yes" onclick="sayYes()">
-        YES 💗
+        YES ♡
       </button>
 
       <button class="option no" id="noBtn">
-        NO 🙄
+        NO
       </button>
     </div>
   </div>
@@ -158,64 +201,231 @@ onclick="toggleMusic()">🎵 Music ON</button>
 </div>
 
 <script>
-const music = document.getElementById("music");
-const musicBtn = document.getElementById("musicBtn");
+/* ==========================
+   FAIRY LULLABY MUSIC
+   Original synthesized music
+========================== */
 
-let attempts = 0;
+let actx = null;
+let master = null;
+let delay = null;
+let musicPlaying = false;
+let timer = null;
+let nextTime = 0;
+let barStep = 0;
 
-async function openProposal() {
+const mtof = n => 440 * Math.pow(2, (n - 69) / 12);
+
+function tone(freq, t, dur, vol, type="sine") {
+  const o = actx.createOscillator();
+  const g = actx.createGain();
+
+  o.type = type;
+  o.frequency.value = freq;
+
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+  o.connect(g);
+  g.connect(master);
+
+  o.start(t);
+  o.stop(t + dur + 0.05);
+}
+
+function pad(freq, t, dur, vol) {
+  const o = actx.createOscillator();
+  const g = actx.createGain();
+
+  o.type = "sine";
+  o.frequency.value = freq;
+
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(vol, t + dur * 0.3);
+  g.gain.linearRampToValueAtTime(0.0001, t + dur);
+
+  o.connect(g);
+  g.connect(master);
+
+  o.start(t);
+  o.stop(t + dur + 0.05);
+}
+
+function bell(freq, t, vol) {
+  tone(freq, t, 3.2, vol);
+  tone(freq * 2.76, t, 1.6, vol * 0.25);
+}
+
+const chords = [
+  [48, 52, 55, 59],
+  [41, 45, 48, 52],
+  [45, 48, 52, 55],
+  [43, 47, 50, 53]
+];
+
+const melody = [
+  [76, 79, 83, 79],
+  [72, 76, 79, 76],
+  [74, 77, 81, 77],
+  [71, 74, 77, 74]
+];
+
+function playBar(i, t, B) {
+  const k = i % chords.length;
+  const c = chords[k];
+
+  c.forEach(n => {
+    pad(mtof(n), t, B * 5, 0.03);
+    pad(mtof(n) * 1.004, t, B * 5, 0.022);
+  });
+
+  pad(mtof(c[0] - 12), t, B * 5, 0.037);
+
+  // Fairy bell notes
+  melody[k].forEach((n, j) => {
+    bell(mtof(n + 12), t + j * B * 0.8, 0.035);
+  });
+
+  // Soft sparkling arpeggio
+  [0,1,2,3,2,1,2,3].forEach((idx,j) => {
+    tone(
+      mtof(c[idx] + 12),
+      t + j * B * 0.5,
+      2.2,
+      0.025
+    );
+  });
+}
+
+function scheduler() {
+  if (!actx || actx.state !== "running") return;
+
+  const B = 60 / 56;
+
+  while (nextTime < actx.currentTime + 0.6) {
+    playBar(barStep, nextTime, B);
+    nextTime += 4 * B;
+    barStep++;
+  }
+}
+
+async function startMusic() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+
+  if (!AC) return;
+
+  if (!actx) {
+    actx = new AC();
+
+    master = actx.createGain();
+    master.gain.value = 0.7;
+
+    delay = actx.createDelay(1);
+    const feedback = actx.createGain();
+    const wet = actx.createGain();
+
+    delay.delayTime.value = 0.38;
+    feedback.gain.value = 0.35;
+    wet.gain.value = 0.35;
+
+    master.connect(actx.destination);
+    master.connect(delay);
+    delay.connect(feedback);
+    feedback.connect(delay);
+    delay.connect(wet);
+    wet.connect(actx.destination);
+  }
+
+  await actx.resume();
+
+  if (musicPlaying) return;
+
+  musicPlaying = true;
+  barStep = 0;
+  nextTime = actx.currentTime + 0.2;
+
+  scheduler();
+
+  if (!timer) {
+    timer = setInterval(scheduler, 200);
+  }
+
+  updateMusicButton();
+}
+
+function stopMusic() {
+  if (!actx) return;
+
+  actx.suspend();
+  musicPlaying = false;
+  updateMusicButton();
+}
+
+async function toggleMusic() {
+  if (musicPlaying) {
+    stopMusic();
+  } else {
+    await startMusic();
+  }
+}
+
+function updateMusicButton() {
+  document.getElementById("musicBtn").textContent =
+    musicPlaying ? "♫ MUSIC ON" : "♫ MUSIC OFF";
+}
+
+/* ==========================
+   OPEN PROPOSAL
+========================== */
+
+document.getElementById("heartBtn").addEventListener("click", async () => {
   document.getElementById("start").classList.add("hidden");
   document.getElementById("proposal").classList.remove("hidden");
 
   try {
-    await music.play();
-    musicBtn.textContent = "🎵 Music ON";
+    await startMusic();
   } catch (error) {
-    musicBtn.textContent = "🎵 Play music";
+    console.error(error);
   }
-}
+});
 
-async function toggleMusic() {
-  if (music.paused) {
-    try {
-      await music.play();
-      musicBtn.textContent = "🎵 Music ON";
-    } catch (error) {
-      musicBtn.textContent = "🎵 Try again";
-    }
-  } else {
-    music.pause();
-    musicBtn.textContent = "🔇 Music OFF";
-  }
-}
+document.getElementById("musicBtn").addEventListener(
+  "click", toggleMusic
+);
 
+/* ==========================
+   NO BUTTON
+========================== */
+
+let attempts = 0;
 const noBtn = document.getElementById("noBtn");
 
-function moveNo() {
-  if (attempts >= 3) return;
+noBtn.addEventListener("pointerenter", e => {
+  if (e.pointerType !== "mouse" || attempts >= 4) return;
 
   attempts++;
   noBtn.style.position = "absolute";
-
-  noBtn.style.left = Math.random() * 220 + "px";
-  noBtn.style.top = Math.random() * 55 + "px";
-
-  if (attempts === 3) {
-    noBtn.textContent = "NO (try again)";
-  }
-}
-
-noBtn.addEventListener("pointerenter", moveNo);
+  noBtn.style.left = Math.random() * 180 + "px";
+  noBtn.style.top = Math.random() * 60 + "px";
+});
 
 noBtn.addEventListener("click", () => {
   document.getElementById("proposal").classList.add("hidden");
+
   const result = document.getElementById("result");
   result.classList.remove("hidden");
+
   result.innerHTML = `
-    No worries!! 💗<br>
-    You're still awesome 🎀
+    <div class="small">That's okay</div>
+    <h1>No worries ♡</h1>
+    <p>Still sending you love!</p>
   `;
 });
+
+/* ==========================
+   YES
+========================== */
 
 function sayYes() {
   document.getElementById("proposal").classList.add("hidden");
@@ -224,9 +434,11 @@ function sayYes() {
   result.classList.remove("hidden");
 
   result.innerHTML = `
-    YAYYYYY!! 💗😭<br>
-    I KNEW IT!! 🎀<br><br>
-    Happy Valentineee! 💌
+    <div class="small">A very good choice</div>
+    <h1>YAYYY ♡</h1>
+    <p>You said YES!</p>
+    <p>It's a date, then.</p>
+    <div class="small">with love ♡</div>
   `;
 
   hearts();
@@ -234,11 +446,18 @@ function sayYes() {
 
 function hearts() {
   for (let i = 0; i < 35; i++) {
-    let heart = document.createElement("div");
+    const heart = document.createElement("div");
+
     heart.className = "floating";
-    heart.innerHTML = ["💗","💕","✨","🎀"][Math.floor(Math.random()*4)];
+    heart.textContent = ["♡","♥","✧","🎀"][
+      Math.floor(Math.random() * 4)
+    ];
+
     heart.style.left = Math.random() * 100 + "vw";
+    heart.style.color = "#d88da9";
+    heart.style.fontSize = "22px";
     heart.style.animationDelay = Math.random() * 3 + "s";
+
     document.body.appendChild(heart);
   }
 }
