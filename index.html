@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -185,6 +186,27 @@ button {
     right: 18px;
   }
 }
+
+/* Floating emojis */
+.floating {
+  position: fixed;
+  bottom: -50px;
+  font-size: 30px;
+  pointer-events: none;
+  z-index: 999;
+  animation: floatUp 3.5s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(.7);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(360deg) scale(1.5);
+    opacity: 0;
+  }
+}
 </style>
 </head>
 
@@ -253,11 +275,12 @@ let noteIndex = 0;
 
 const tempo = 60 / 56;
 
+/* New soft romantic music */
 const chords = [
-  [261.63, 329.63, 392.00],
-  [220.00, 261.63, 329.63],
+  [196.00, 246.94, 293.66],
   [174.61, 220.00, 261.63],
-  [196.00, 246.94, 293.66]
+  [146.83, 185.00, 220.00],
+  [164.81, 207.65, 246.94]
 ];
 
 function playTone(freq, start, duration, volume, type = "sine") {
@@ -289,10 +312,10 @@ function playChord() {
   });
 
   const melody = [
-    523.25, 659.25, 783.99, 659.25,
-    587.33, 698.46, 880.00, 698.46,
-    523.25, 659.25, 783.99, 1046.50,
-    783.99, 659.25, 587.33, 523.25
+    392.00, 493.88, 587.33, 493.88,
+    440.00, 523.25, 659.25, 523.25,
+    392.00, 493.88, 587.33, 783.99,
+    659.25, 587.33, 493.88, 392.00
   ];
 
   const bell = melody[noteIndex % melody.length];
@@ -373,6 +396,27 @@ function resumeMusicVolume() {
   }
 }
 
+/* Floating hearts and emojis */
+function createFloating(symbols) {
+  for (let i = 0; i < 45; i++) {
+    setTimeout(() => {
+      const item = document.createElement("div");
+
+      item.className = "floating";
+      item.textContent =
+        symbols[Math.floor(Math.random() * symbols.length)];
+
+      item.style.left = Math.random() * 100 + "vw";
+      item.style.animationDuration = (2.5 + Math.random() * 2) + "s";
+      item.style.fontSize = (20 + Math.random() * 30) + "px";
+
+      document.body.appendChild(item);
+
+      setTimeout(() => item.remove(), 5000);
+    }, i * 60);
+  }
+}
+
 heart.addEventListener("click", async () => {
   await startMusic();
   intro.classList.add("hidden");
@@ -391,6 +435,8 @@ musicBtn.addEventListener("click", async () => {
 yes.addEventListener("click", () => {
   question.classList.add("hidden");
   yesResult.classList.remove("hidden");
+
+  createFloating(["❤️", "💕", "💗", "💖", "💘", "♡"]);
 });
 
 function moveNoButton() {
@@ -419,6 +465,8 @@ no.addEventListener("touchstart", () => {
 no.addEventListener("click", () => {
   question.classList.add("hidden");
   noResult.classList.remove("hidden");
+
+  createFloating(["🖕", "🖕🏻", "💀"]);
 });
 </script>
 
