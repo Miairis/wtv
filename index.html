@@ -29,7 +29,7 @@ body {
 }
 
 body::before {
-  content: "";
+  content: " ";
   position: fixed;
   inset: 12px;
   border: 1px solid rgba(255,255,255,.75);
@@ -181,6 +181,7 @@ button {
     min-height: 400px;
     padding: 40px 18px;
   }
+
   .music {
     bottom: 18px;
     right: 18px;
@@ -214,7 +215,6 @@ button {
 
 <div class="card">
 
-  <!-- INTRO -->
   <section id="intro">
     <div class="small">A LITTLE SURPRISE</div>
     <h1>Hey ho!</h1>
@@ -223,7 +223,6 @@ button {
     <button class="heart" id="heart">♡</button>
   </section>
 
-  <!-- QUESTION -->
   <section id="question" class="hidden">
     <div class="small">JUST ONE QUESTION</div>
     <h1>Sooo...</h1>
@@ -235,7 +234,6 @@ button {
     </div>
   </section>
 
-  <!-- YES RESULT -->
   <section id="yesResult" class="hidden result">
     <div class="small">BEST ANSWER EVER</div>
     <h1>YAYYY ♡</h1>
@@ -243,7 +241,6 @@ button {
     <p>It's a date, then. 🎀</p>
   </section>
 
-  <!-- NO RESULT -->
   <section id="noResult" class="hidden result">
     <div class="small">THAT WAS RUDE</div>
     <h1>FUCK YOU</h1>
@@ -267,17 +264,31 @@ const no = document.getElementById("no");
 const musicBtn = document.getElementById("musicBtn");
 
 let noMoves = 0;
+
 let audioCtx;
 let master;
 let musicPlaying = false;
 let musicTimer;
 let noteIndex = 0;
+let activeNodes = [];
 
-const tempo = 60 / 48;
+/* Dreamy original lullaby music */
 
-/* Soft 432Hz music */
+const melody = [
+  523.25, 659.25, 783.99, 659.25,
+  587.33, 698.46, 880.00, 698.46,
+  523.25, 659.25, 783.99, 1046.50,
+  880.00, 783.99, 659.25, 587.33
+];
 
-function playTone(freq, start, duration, volume, type = "sine") {
+const chords = [
+  [261.63, 329.63, 392.00],
+  [220.00, 261.63, 329.63],
+  [174.61, 220.00, 261.63],
+  [196.00, 246.94, 293.66]
+];
+
+function playNote(freq, start, duration, volume, type = "sine") {
   if (!audioCtx || !master) return;
 
   const osc = audioCtx.createOscillator();
@@ -287,11 +298,11 @@ function playTone(freq, start, duration, volume, type = "sine") {
   osc.frequency.setValueAtTime(freq, start);
 
   gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.linearRampToValueAtTime(
+  gain.gain.exponentialRampToValueAtTime(
     volume,
-    start + duration * 0.25
+    start + 0.12
   );
-  gain.gain.linearRampToValueAtTime(
+  gain.gain.exponentialRampToValueAtTime(
     0.0001,
     start + duration
   );
@@ -301,14 +312,39 @@ function playTone(freq, start, duration, volume, type = "sine") {
 
   osc.start(start);
   osc.stop(start + duration + 0.1);
+
+  activeNodes.push(osc);
+
+  osc.onended = () => {
+    activeNodes = activeNodes.filter(node => node !== osc);
+  };
 }
 
-function playChord() {
-  if (!audioCtx || !master) return;
+function playMusicStep() {
+  if (!audioCtx || !musicPlaying) return;
 
   const now = audioCtx.currentTime;
 
-  playTone(432, now, 2.8, 0.025, "sine");
+  // Soft dreamy melody
+  const note = melody[noteIndex % melody.length];
+
+  playNote(note, now, 2.2, 0.035, "sine");
+
+  // Gentle bell-like sparkle
+  playNote(note * 2, now + 0.08, 1.4, 0.009, "sine");
+
+  // Warm background chord
+  if (noteIndex % 4 === 0) {
+    const chord = chords[
+      Math.floor(noteIndex / 4) % chords.length
+    ];
+
+    chord.forEach((freq, i) => {
+      playNote(freq, now, 3.8, 0.012, "sine");
+    });
+  }
+
+  noteIndex++;
 }
 
 async function startMusic() {
@@ -320,41 +356,44 @@ async function startMusic() {
       audioCtx = new AudioContextClass();
 
       master = audioCtx.createGain();
-      master.gain.value = 0.12;
+      master.gain.value = 0.7;
 
       master.connect(audioCtx.destination);
     }
 
-    await audioCtx.resume();
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
+    }
 
     if (!musicPlaying) {
       musicPlaying = true;
-      playChord();
+      noteIndex = 0;
+
+      playMusicStep();
 
       musicTimer = setInterval(() => {
-        if (audioCtx.state === "running") {
-          playChord();
-        }
-      }, 3000);
+        playMusicStep();
+      }, 1600);
     }
 
     musicBtn.textContent = "♫ MUSIC ON";
 
   } catch (error) {
-    console.error(error);
+    console.error("Music error:", error);
     musicBtn.textContent = "♫ TAP TO PLAY";
   }
 }
 
 function stopMusic() {
   musicPlaying = false;
+
   clearInterval(musicTimer);
 
   if (master && audioCtx) {
     master.gain.setTargetAtTime(
       0.0001,
       audioCtx.currentTime,
-      0.15
+      0.2
     );
   }
 
@@ -364,9 +403,9 @@ function stopMusic() {
 function resumeMusicVolume() {
   if (master && audioCtx) {
     master.gain.setTargetAtTime(
-      0.12,
+      0.7,
       audioCtx.currentTime,
-      0.15
+      0.2
     );
   }
 }
@@ -396,8 +435,11 @@ function createFloating(symbols) {
   }
 }
 
+/* Buttons */
+
 heart.addEventListener("click", async () => {
   await startMusic();
+
   intro.classList.add("hidden");
   question.classList.remove("hidden");
 });
