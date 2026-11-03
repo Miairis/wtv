@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hey ho! 💗</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fff0f5, #ffe0ec, #fff5fa);
+  font-family: Georgia, serif;
+  overflow: hidden;
+  color: #bd6485;
+}
+
+.container {
+  text-align: center;
+  padding: 25px;
+  width: 90%;
+  max-width: 420px;
+  z-index: 2;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.heart {
+  border: none;
+  background: none;
+  font-size: 85px;
+  cursor: pointer;
+  animation: beat 1s infinite;
+}
+
+@keyframes beat {
+  50% { transform: scale(1.15); }
+}
+
+button.option {
+  border: none;
+  border-radius: 25px;
+  padding: 12px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px;
+  font-family: inherit;
+}
+
+.yes {
+  background: #ed91b3;
+  color: white;
+}
+
+.no {
+  background: #eee;
+  color: #777;
+  position: relative;
+}
+
+.hidden {
+  display: none;
+}
+
+#buttons {
+  position: relative;
+  min-height: 100px;
+  margin-top: 20px;
+}
+
+#result {
+  font-size: 24px;
+  margin-top: 25px;
+}
+
+.floating {
+  position: fixed;
+  bottom: -30px;
+  animation: floatUp 6s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.music-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffffffaa;
+  border: 1px solid #f5c3d5;
+  border-radius: 30px;
+  padding: 10px 15px;
+  color: #bd6485;
+  cursor: pointer;
+  z-index: 5;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Music -->
+<audio id="music" loop>
+  <source src="YOUR_MUSIC_URL" type="audio/mpeg">
+</audio>
+
+<button class="music-btn" id="musicBtn"
+onclick="toggleMusic()">🎵 Music ON</button>
+
+<div class="container">
+
+  <div id="start">
+    <h1>Hey ho! 💗</h1>
+    <p>I have something to tell you...</p>
+    <button class="heart" onclick="openProposal()">💗</button>
+    <p style="font-size:13px">tap the heart</p>
+  </div>
+
+  <div id="proposal" class="hidden">
+    <h1>Sooo... 💌</h1>
+    <p>Wanna be my Valentine? 🎀</p>
+
+    <div id="buttons">
+      <button class="option yes" onclick="sayYes()">
+        YES 💗
+      </button>
+
+      <button class="option no" id="noBtn">
+        NO 🙄
+      </button>
+    </div>
+  </div>
+
+  <div id="result" class="hidden"></div>
+
+</div>
+
+<script>
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+
+let attempts = 0;
+
+async function openProposal() {
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("proposal").classList.remove("hidden");
+
+  try {
+    await music.play();
+    musicBtn.textContent = "🎵 Music ON";
+  } catch (error) {
+    musicBtn.textContent = "🎵 Play music";
+  }
+}
+
+async function toggleMusic() {
+  if (music.paused) {
+    try {
+      await music.play();
+      musicBtn.textContent = "🎵 Music ON";
+    } catch (error) {
+      musicBtn.textContent = "🎵 Try again";
+    }
+  } else {
+    music.pause();
+    musicBtn.textContent = "🔇 Music OFF";
+  }
+}
+
+const noBtn = document.getElementById("noBtn");
+
+function moveNo() {
+  if (attempts >= 3) return;
+
+  attempts++;
+  noBtn.style.position = "absolute";
+
+  noBtn.style.left = Math.random() * 220 + "px";
+  noBtn.style.top = Math.random() * 55 + "px";
+
+  if (attempts === 3) {
+    noBtn.textContent = "NO (try again)";
+  }
+}
+
+noBtn.addEventListener("pointerenter", moveNo);
+
+noBtn.addEventListener("click", () => {
+  document.getElementById("proposal").classList.add("hidden");
+  const result = document.getElementById("result");
+  result.classList.remove("hidden");
+  result.innerHTML = `
+    No worries!! 💗<br>
+    You're still awesome 🎀
+  `;
+});
+
+function sayYes() {
+  document.getElementById("proposal").classList.add("hidden");
+
+  const result = document.getElementById("result");
+  result.classList.remove("hidden");
+
+  result.innerHTML = `
+    YAYYYYY!! 💗😭<br>
+    I KNEW IT!! 🎀<br><br>
+    Happy Valentineee! 💌
+  `;
+
+  hearts();
+}
+
+function hearts() {
+  for (let i = 0; i < 35; i++) {
+    let heart = document.createElement("div");
+    heart.className = "floating";
+    heart.innerHTML = ["💗","💕","✨","🎀"][Math.floor(Math.random()*4)];
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDelay = Math.random() * 3 + "s";
+    document.body.appendChild(heart);
+  }
+}
+</script>
+
+</body>
+</html>
