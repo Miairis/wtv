@@ -273,15 +273,9 @@ let musicPlaying = false;
 let musicTimer;
 let noteIndex = 0;
 
-const tempo = 60 / 56;
+const tempo = 60 / 48;
 
-/* New soft romantic music */
-const chords = [
-  [196.00, 246.94, 293.66],
-  [174.61, 220.00, 261.63],
-  [146.83, 185.00, 220.00],
-  [164.81, 207.65, 246.94]
-];
+/* Soft 432Hz music */
 
 function playTone(freq, start, duration, volume, type = "sine") {
   if (!audioCtx || !master) return;
@@ -293,8 +287,14 @@ function playTone(freq, start, duration, volume, type = "sine") {
   osc.frequency.setValueAtTime(freq, start);
 
   gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.exponentialRampToValueAtTime(volume, start + 0.3);
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  gain.gain.linearRampToValueAtTime(
+    volume,
+    start + duration * 0.25
+  );
+  gain.gain.linearRampToValueAtTime(
+    0.0001,
+    start + duration
+  );
 
   osc.connect(gain);
   gain.connect(master);
@@ -304,29 +304,11 @@ function playTone(freq, start, duration, volume, type = "sine") {
 }
 
 function playChord() {
-  const chord = chords[Math.floor(noteIndex / 4) % chords.length];
+  if (!audioCtx || !master) return;
+
   const now = audioCtx.currentTime;
 
-  chord.forEach((freq) => {
-    playTone(freq / 2, now, 3.5, 0.025);
-  });
-
-  const melody = [
-    392.00, 493.88, 587.33, 493.88,
-    440.00, 523.25, 659.25, 523.25,
-    392.00, 493.88, 587.33, 783.99,
-    659.25, 587.33, 493.88, 392.00
-  ];
-
-  const bell = melody[noteIndex % melody.length];
-
-  playTone(bell, now, 2.2, 0.055);
-  playTone(bell * 2, now, 1.2, 0.012);
-
-  const arpeggio = chord[noteIndex % chord.length] * 2;
-  playTone(arpeggio, now + tempo * 0.5, 1.4, 0.018);
-
-  noteIndex++;
+  playTone(432, now, 2.8, 0.025, "sine");
 }
 
 async function startMusic() {
@@ -338,23 +320,9 @@ async function startMusic() {
       audioCtx = new AudioContextClass();
 
       master = audioCtx.createGain();
-      master.gain.value = 0.7;
-
-      const delay = audioCtx.createDelay();
-      delay.delayTime.value = 0.45;
-
-      const feedback = audioCtx.createGain();
-      feedback.gain.value = 0.22;
-
-      const wet = audioCtx.createGain();
-      wet.gain.value = 0.25;
+      master.gain.value = 0.12;
 
       master.connect(audioCtx.destination);
-      master.connect(delay);
-      delay.connect(feedback);
-      feedback.connect(delay);
-      delay.connect(wet);
-      wet.connect(audioCtx.destination);
     }
 
     await audioCtx.resume();
@@ -362,11 +330,18 @@ async function startMusic() {
     if (!musicPlaying) {
       musicPlaying = true;
       playChord();
-      musicTimer = setInterval(playChord, tempo * 1000);
+
+      musicTimer = setInterval(() => {
+        if (audioCtx.state === "running") {
+          playChord();
+        }
+      }, 3000);
     }
 
     musicBtn.textContent = "♫ MUSIC ON";
+
   } catch (error) {
+    console.error(error);
     musicBtn.textContent = "♫ TAP TO PLAY";
   }
 }
@@ -375,7 +350,7 @@ function stopMusic() {
   musicPlaying = false;
   clearInterval(musicTimer);
 
-  if (master) {
+  if (master && audioCtx) {
     master.gain.setTargetAtTime(
       0.0001,
       audioCtx.currentTime,
@@ -389,7 +364,7 @@ function stopMusic() {
 function resumeMusicVolume() {
   if (master && audioCtx) {
     master.gain.setTargetAtTime(
-      0.7,
+      0.12,
       audioCtx.currentTime,
       0.15
     );
@@ -397,6 +372,7 @@ function resumeMusicVolume() {
 }
 
 /* Floating hearts and emojis */
+
 function createFloating(symbols) {
   for (let i = 0; i < 45; i++) {
     setTimeout(() => {
@@ -407,8 +383,11 @@ function createFloating(symbols) {
         symbols[Math.floor(Math.random() * symbols.length)];
 
       item.style.left = Math.random() * 100 + "vw";
-      item.style.animationDuration = (2.5 + Math.random() * 2) + "s";
-      item.style.fontSize = (20 + Math.random() * 30) + "px";
+      item.style.animationDuration =
+        (2.5 + Math.random() * 2) + "s";
+
+      item.style.fontSize =
+        (20 + Math.random() * 30) + "px";
 
       document.body.appendChild(item);
 
